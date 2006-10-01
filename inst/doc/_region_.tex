@@ -1,0 +1,17 @@
+\message{ !name(backtest.Rnw.tex)}{\makeatletter\gdef\AucTeX@cite#1[#2]#3{[#3#1#2]}\gdef\cite{\@ifnextchar[{\AucTeX@cite{, }}{\AucTeX@cite{}[]}}}
+
+\message{ !name(backtest.Rnw) !offset(21) }
+options(width = 50, digits = 2, scipen = 5)
+set.seed(1)
+cat.df.without.rownames <- function (d, file = ""){
+  stopifnot(is.data.frame(d))
+  row.names(d) <- 1:nrow(d)
+  x <- NULL
+  conn <- textConnection("x", "w", local = TRUE)
+  capture.output(print(d), file = conn)
+  close(conn)
+  cat(substring(x, first = max(nchar(row.names(d))) + 2), sep = "\n", 
+      file = file)
+}
+
+\message{ !name(backtest.Rnw.tex) !offset(-17) }

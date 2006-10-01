@@ -30,19 +30,19 @@
 
 \section{Slots}{
   \describe{
-    \item{\code{in.var}:}{an object of class \code{"character"} specifying
+    \item{\code{in.var}:}{Object of class \code{"character"} specifying
       the \code{in.var} values for this backtest.
     }
-    \item{\code{ret.var}:}{an object of class \code{"character"} containing
+    \item{\code{ret.var}:}{Object of class \code{"character"} containing
       the \code{ret.var} values for this backtest.
     }
-    \item{\code{by.var}:}{an object of class \code{"character"} containing
+    \item{\code{by.var}:}{Object of class \code{"character"} containing
       the \code{by.var}, if specified, for this backtest. 
     }
-    \item{\code{date.var}:}{an object of class \code{"character"} containing
+    \item{\code{date.var}:}{Object of class \code{"character"} containing
       the \code{date.var}, if specified, for this backtest. 
     }
-    \item{\code{buckets}:}{an object of class \code{"numeric"} containing
+    \item{\code{buckets}:}{Object of class \code{"numeric"} containing
       the number(s) of buckets used create quantiles from the
       \code{in.var} and \code{by.var} values.
     }
@@ -143,37 +143,32 @@ elements: \code{means}, \code{counts}, \code{trim.means}, and
 \examples{
 
 data(starmine)
-  
-bt <- backtest(starmine, in.var = "smi", ret.var = "ret.0.1.m")
+bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m")
 
-## summary for a pooled backtest
+## Summary for a pooled backtest
+
+summary(bt)
+
+## A natural backtest
+
+bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m",
+               date.var = "date", id.var = "id", natural = TRUE)
+
+## Summary for a natural backtest
 
 summary(bt)
 
-## a natural backtest
-
-bt <- backtest(starmine, in.var = "smi", ret.var =
-"ret.0.1.m", date.var = "date", id.var = "id", natural = TRUE)
-
-## summary for a natural backtest
-
-summary(bt)
+## Other access methods
 
 means(bt)
 counts(bt)
 marginals(bt)
 naCounts(bt)
 
-## draws a plot of turnover
+## Plotting methods
 
 plot(bt, type = "turnover")
-
-## draws a plot of monthly spreads
-
 plot(bt, type = "return")
-
-## draws a fanplot of returns
-
 plot(bt, type = "cumreturn")
 
 }

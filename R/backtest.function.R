@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: $
+## $Id: backtest.function.R 351 2006-10-02 00:22:20Z enos $
 ##
 ## Returns an object of class backtest
 ##
@@ -42,14 +42,14 @@ backtest <- function(x,
 
   ## Must provide minimum of one in.var and one ret.var
 
-  if(missing(in.var) || missing(ret.var)){
+  if(length(in.var) < 1 || length(ret.var) < 1){
     stop("At least one in.var and ret.var required")
   }
   
-  ## Natural portfolios must have dates
+  ## Natural backtests must have dates and ids.
   
-  if(natural && missing(date.var)){
-    stop("Must specify a date.var for a natural backtest.")
+  if(natural && (is.null(date.var) || is.null(id.var))){
+    stop("Must specify date.var and id.var for a natural backtest.")
   }
 
   ## in.var and ret.var columns must be numeric
@@ -100,15 +100,11 @@ backtest <- function(x,
     else{
       by.var <- date.var
     }
-
-    if(is.null(id.var)){
-      stop("Must specify id.var to use date.var.")
-    }
   }
   
   ## Evaluate "universe"
   
-  if(!missing(universe)){
+  if(!is.null(universe)){
     univ <- eval(substitute(universe), x, parent.frame())
     univ <- univ & !is.na(univ)
     x <- x[univ,]
@@ -139,7 +135,7 @@ backtest <- function(x,
   ## 1. date
   ## 2. in.var
 
-  if(!is.null(date.var)){
+  if(natural){
     turnover <- array(dim = c(length(levels(x$by.factor)), length(in.var)),
                       dimnames = list(levels(x$by.factor), in.var))
   }
@@ -233,7 +229,7 @@ backtest <- function(x,
       
       ## Calculate Turnover
 
-      if(!is.null(date.var)){
+      if(natural){
         turnover[, i] <- calc.turnover(x[[id.var]],
                                        portfolio.factor = in.factor,
                                        date.factor = x$by.factor)

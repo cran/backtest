@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: $
+## $Id: bt.sharpe.R 351 2006-10-02 00:22:20Z enos $
 ##
 ## Returns a one-dimensional array of sharpe ratios
 ##
@@ -19,11 +19,8 @@
 
  for(i in object@in.var){
    x <- object@results[object@ret.var, i, , ,"means"]
-
-   short <- -colSums(x)[1]
-   long <- colSums(x)[object@buckets[2]]
-
-   sr[1,i] <- (short + long)/object@ret.stats[1,"sd"]
+   spreads <- x[,"high"] - x[,"low"]
+   sr[1,i] <- mean(spreads, na.rm = TRUE)/sd(spreads, na.rm = TRUE)
  }
  sr
 }

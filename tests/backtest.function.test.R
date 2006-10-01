@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: $
+## $Id: backtest.function.test.R 342 2006-10-01 05:02:50Z enos $
 ##
 ## Tests for function "backtest.function"
 ##

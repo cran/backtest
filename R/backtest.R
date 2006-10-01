@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: $
+## $Id: backtest.R 355 2006-10-02 01:47:31Z enos $
 ##
 ## Result object for a backtest
 ##
@@ -114,6 +114,7 @@ setMethod("summary",
 
             if(object@natural){
               if(length(object@in.var) == 1){
+
                 cat("average turnover: ", .bt.mean(turnover(object)),
                     "\nmean spread: ", mean(summaryStats(object)[, "spread"]),
                     "\nsd spread: ", sd(summaryStats(object)[, "spread"]),
@@ -125,7 +126,6 @@ setMethod("summary",
                 for(i in object@in.var){
 
                   x <- summaryStats(object)
-                  
                   cat("summary stats for in.var = ", i,
                       ":\n\naverage turnover: ",
                       .bt.mean(turnover(object))[1,i],
@@ -193,7 +193,7 @@ setMethod("summaryStats",
 
               output <- cbind(output, spread)
               
-              if(date.present){
+              if(object@natural){
                 turnover <- object@turnover
                 dimnames(turnover)[[2]] <- "TURNOVER"
                 output <- cbind(output, turnover)
@@ -223,7 +223,9 @@ setMethod("summaryStats",
 
               output <- t(object@results[1, , ,dim(object@results)[4],1] -
                           object@results[1, , ,1,1])
+              
 
+              
               if(date.present && mean){
                 output <- rbind(output, .bt.mean(output))
               }
@@ -355,11 +357,11 @@ setMethod("turnover",
           signature(object = "backtest"),
           function(object, mean = FALSE){
             
-            if(!object@natural){
+            if(!isTRUE(object@natural)){
               stop("Cannot calculate turnover if not a natural backtest.")
             }
 
-            if(mean){
+            if(isTRUE(mean)){
               return(rbind(object@turnover, .bt.mean(turnover(object))))
             }
 
@@ -398,13 +400,16 @@ setMethod("plot",
             }
 
             if(type == "return"){
-              btplot <- .plot.returns(x, ...)
+              btplot <- .plot.return(x, ...)
             }
             else if(type == "turnover"){
               btplot <- .plot.turnover(x, ...)
             }
             else if(type == "cumreturn"){
-              btplot <- .fanplot(x, ...)
+              btplot <- .plot.cumreturn(x, ...)
+            }
+            else if(type == "cumreturn.split"){
+              btplot <- .plot.cumreturn.split(x, ...)
             }
             else{
               stop("Unknown type specified.")
@@ -417,13 +422,16 @@ setMethod("plot",
 
 ## Plots turnover for each period specified by "date.var"
 
-.plot.turnover <- function(object, main = "Backtest Turnover",
-                          xlab = "Date", ylab = "Turnover", ...){
+.plot.turnover <- function(object, main = "Turnover",
+                          xlab = "Date", ylab = "Turnover (%)", ...){
   
   turnovers <- object@turnover[-1,]
 
-  turnovers <- as.data.frame(turnovers)
+  turnovers <- 100 * as.data.frame(turnovers)
 
+  ## We might want to think about what to do here if we can't turn the
+  ## rownames of the turnover matrix to Date objects.
+  
   datevar <- as.Date(rownames(turnovers))
   
   invars <- names(turnovers)[1]
@@ -438,7 +446,7 @@ setMethod("plot",
   
   btplot <- xyplot(form, turnovers, type = "b", horizontal = FALSE,
                   auto.key = TRUE, scales = list(tick.number = 10),
-          ylim = c(0, 1), main = main, xlab = xlab, ylab = ylab, ...)
+          ylim = c(0, 100), main = main, xlab = xlab, ylab = ylab, ...)
 
   print(btplot)
 
@@ -447,8 +455,8 @@ setMethod("plot",
 
 ## Plots returns for each period specified by "date.var"
 
-.plot.returns <- function(object, main = "Backtest Returns",
-                         xlab = "Date", ylab = "Spread of Mean Returns", ...){
+.plot.return <- function(object, main = "Spread Return",
+                         xlab = "Date", ylab = "Return (%)", ...){
   
   spreads <- object@results[1, , ,dim(object@results)[4],1] -
     object@results[1, , ,1,1]
@@ -460,11 +468,8 @@ setMethod("plot",
                      dimnames = list(object@in.var,
                        names(spreads)))
   }
-  
-  spreads <- data.frame(t(spreads))
 
-  datevar <- rownames(spreads)
-  
+  spreads <- 100 * data.frame(t(spreads))  
   invars <- names(spreads)[1]
   
   if(length(names(spreads)) > 1){
@@ -473,11 +478,17 @@ setMethod("plot",
     }
   }
   
-  form <- as.formula(paste(invars, "~", "datevar"))
-  
+  form <- as.formula(paste(invars, "~", "date"))
+
+
+  spreads$date <- rownames(spreads)
+
   btplot <- barchart(form, spreads, horizontal = FALSE, stack = FALSE,
-                     auto.key = TRUE, scale = list(y = list(tick.number = 10),
-                                        x = list(rot = 90)), origin = 0,
+                     auto.key = TRUE,
+                     scale = list(
+                       y = list(tick.number = 10),
+                       x = list(tick.number = 10, rot = 90)),
+                     origin = 0,
                      main = main, xlab = xlab, ylab = ylab, ...)
   
   print(btplot)
@@ -486,8 +497,8 @@ setMethod("plot",
   
 }
 
-.fanplot <- function(object, main = "Backtest Fanplot", xlab = "Date",
-                    ylab = "Cumulative Returns", ...){
+.plot.cumreturn <- function(object, main = "Backtest Fanplot", xlab = "Date",
+                            ylab = "Cumulative Returns", ...){
   
   ## Function to compute cumsums of a matrix, by columns
   
@@ -507,26 +518,220 @@ setMethod("plot",
   new.returns <- data.frame()
   
   for(i in 1:length(returns)){
+
     this.returns <- data.frame(returns[[i]])
+    
+    ## We need quantile names that don't begin with a number so that
+    ## the formula used with lattice graphics works.  But, the "Xn"
+    ## naming scheme that is data.frame's default needs to get changed
+    ## to "Qn".
+    
+    names(this.returns) <- gsub("X([1-9]+)", "Q\\1",
+                                names(this.returns),
+                                perl = TRUE)
+
     this.returns$group <- names(returns)[i]
     this.returns$date <- as.Date(rownames(this.returns))
     new.returns <- rbind(new.returns, this.returns)
   }
 
-  invars <- names(new.returns)[1]
+  invars <- names(new.returns)[1:(length(names(new.returns)) - 2)]
+  lhs    <- paste(rev(invars), collapse = " + ")
+  form   <- as.formula(paste(lhs, "~ date | group"))
   
-  for(i in 2:(length(names(new.returns)) - 2)){
-    invars <- paste(invars, "+",  names(new.returns)[i])
-  }
-  
-  form <- as.formula(paste(invars, "~ date | group"))
-  
-  btplot <- xyplot(form, new.returns, type = "b", horizontal = FALSE,
-          auto.key = list(space = "right"), as.table = TRUE,
-          main = main, xlab = xlab, ylab = ylab, ...)
-  
+  btplot <- xyplot(form, new.returns,
+                   type  = "l", horizontal = FALSE,
+                   auto.key = list(
+                     space     = "right",
+                     points    = FALSE,
+                     lines     = TRUE,
+                     cex       = 0.75,
+                     title     = "quantile",
+                     cex.title = 1),
+                   as.table = TRUE,
+                   main     = "Cumulative Quantile Return",
+                   xlab     = xlab,
+                   ylab     = ylab, ...)
+
   print(btplot)
   
   return(btplot)
+  
+}
+
+.plot.cumreturn.split <- function(object,
+                                  xlab = "Date",
+                                  ylab = "Return (%)", ...){
+
+  ## No notion of spread return without 2 or more buckets.
+
+  stopifnot(isTRUE(object@buckets[1] >= 2))
+
+  ## Data setup.  Calculate cumulative returns and spread returns
+  ## before plotting.
+  
+  ## Function to compute the cumulative return of each quantile, and
+  ## the spread cumulative return.  Since we're dealing with portfolio
+  ## return and fixed theoretical assets, we take a cumulative sum
+  ## without compounding.
+
+  ## Also, convert return into percent.
+  
+  cumulate <- function(x){
+    x <- data.frame(x)
+
+    for(i in 1:ncol(x)){
+      x[[i]] <- 100 * cumsum(x[[i]])
+    }
+
+    x$spread <- x[[ncol(x)]] - x[[1]]
+    
+    x
+  }
+
+  returns <- means(object)
+
+  ## Calculate cumulative returns
+  
+  returns <- lapply(returns, cumulate)
+  
+  new.returns <- data.frame()
+  
+  for(i in 1:length(returns)){
+    this.returns <- returns[[i]]
+
+    ## We need quantile names that don't begin with a number so that
+    ## the formula used with lattice graphics works.  But, the "Xn"
+    ## naming scheme that is data.frame's default needs to get changed
+    ## to "Qn".
+    
+    names(this.returns) <- gsub("X([1-9]+)", "Q\\1",
+                                names(this.returns),
+                                perl = TRUE)
+    
+    this.returns$group <- names(returns)[i]
+    this.returns$date <- as.Date(rownames(this.returns))
+    new.returns <- rbind(new.returns, this.returns)
+  }
+
+  ## Plotting
+  ##
+  ## There are two regions to this plot, the top plot of spread return
+  ## and the bottom, larger plot of cumulative quantile return.
+
+  ## Compute ylim as 50% more space than we would need normally.
+
+  y.max <- max(new.returns$spread)
+  y.min <- min(new.returns$spread)
+  y.dist <- y.max - y.min
+  ylim <- c(y.min - 0.5 * y.dist, y.max + 0.05 * y.dist)
+
+  ## Panel function
+  
+  top.panel <- function(x, y, subscripts, ...){
+
+
+    
+    op <- options(digits = 2)
+
+    ## Annotate panel with total return.
+
+    pushViewport(viewport(x = 0.05, y = 0.95))
+    grid.text(paste("Total return:", format(tail(y, n = 1))),
+              hjust = 0, vjust = 1, gp = gpar(cex = 0.75))
+    popViewport()
+
+    ## Annotate panel with worst drawdown.  Remember, y is now in pct.
+    
+    dd       <- 1 - (y/100 + 1)/cummax(y/100 + 1)
+    dd.max   <- max(dd)
+
+    ## If there are two troughs of equal value the below makes the
+    ## largest drawdown extend to the furthest trough.
+
+    dd.end.idx   <- max(which.max(dd), length(dd) - which.max(rev(dd)) + 1)
+    dd.end       <- x[dd.end.idx]
+    dd.start.idx <- max(which(dd == 0 & seq(dd) < dd.end.idx))
+    dd.start     <- x[dd.start.idx]
+    dd.ret       <- y[dd.end.idx] - y[dd.start.idx]
+
+    if(all(dd == 0)) dd.ret <- "--"
+    
+    pushViewport(viewport(x = 0.05, y = 0.05))
+    grid.text(paste("Worst drawdown:", format(dd.ret)),
+              hjust = 0, vjust = 0, gp = gpar(cex = 0.75))
+    popViewport()
+
+    panel.xyplot(x, y, col.line = "black", ...)
+
+    if(!all(dd == 0)){
+      panel.lines(x[dd.start.idx:dd.end.idx], y = y[dd.start.idx:dd.end.idx],
+                  col ="red", default.units = "native",...)
+    }
+
+    options(op)
+  }
+  
+  ## I'm fixing the layout of the top and bottom plots to have one row
+  ## of panels.  The layout of date labels doesn't seem to fare very
+  ## well using a layout other than the default, however.  That said,
+  ## this plot is most useful with a couple in.var's.  I should allow
+  ## the user to be able to modify such layout characteristics.
+  
+  top.plot <- xyplot(formula("spread ~ date | group"), new.returns,
+                     panel = top.panel,
+                     type       = "l",
+                     horizontal = FALSE,
+                     as.table   = TRUE,
+                     layout = c(length(object@in.var),1),
+                     scale      = list(x = list(alternating = 1)),
+                     main       = "Cumulative Spread Return",
+                     ylim       = ylim,
+                     xlab       = NULL,
+                     ylab       = ylab,
+                     ...)
+  
+  ## The bottom plot doesn't use spread, so subtract the last _3_
+  ## columns when computing in.var's.
+  
+  invars <- names(new.returns)[1:(length(names(new.returns)) - 3)]
+  lhs    <- paste(rev(invars), collapse = " + ")
+  form   <- as.formula(paste(lhs, "~ date | group"))
+
+  bottom.panel <- function(x, y, subscripts, groups, ...){
+    panel.superpose(x, y, subscripts, groups, ...)
+  }
+  
+  bottom.plot <- xyplot(form, new.returns,
+                        panel = bottom.panel,
+                        type  = "l", horizontal = FALSE,
+                        auto.key = list(
+                          x         = 0.1,
+                          y         = 0.8,
+                          corner    = c(0,1),
+                          points    = FALSE,
+                          lines     = TRUE,
+                          cex       = 0.75,
+                          title     = "quantile",
+                          cex.title = 1),
+                        as.table = TRUE,
+                        layout   = c(length(object@in.var),1),
+                        scale    = list(x = list(alternating = 1)),
+                        main     = "Cumulative Quantile Return",
+                        xlab     = xlab,
+                        ylab     = ylab, ...)
+
+
+  ## Calculate panel width.  Assuming 0.15 npc used for margins (not a
+  ## very safe assumption).  So far I don't have any other good way to
+  ## ensure that the aspects of the panels in the two lattice plots
+  ## are the same.
+
+  panel.width <- 0.85 / length(object@in.var)
+
+  print(top.plot, position = c(0, 0.6, 1, .98),
+        panel.width = list(panel.width, "npc"), more = TRUE)
+  print(bottom.plot, position = c(0, 0,   1, 0.6),
+        panel.width = list(panel.width, "npc"))
   
 }
