@@ -25,8 +25,8 @@
 /c   { newpath 0 360 arc } def
 /r   { 4 2 roll moveto 1 copy 3 -1 roll exch 0 exch rlineto 0 rlineto -1 mul 0 exch rlineto closepath } def
 /p1  { stroke } def
-/p2  { gsave bg setrgbcolor fill grestore newpath } def
-/p3  { gsave bg setrgbcolor fill grestore stroke } def
+/p2  { gsave bg fill grestore newpath } def
+/p3  { gsave bg fill grestore stroke } def
 /t   { 6 -2 roll moveto gsave rotate
        ps mul neg 0 2 1 roll rmoveto
        1 index stringwidth pop
@@ -84,19 +84,19 @@ bp
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 /ps 14 def /Font2 findfont 14 s
-0 0 0 rgb
+0 setgray
 216.00 417.63 (Turnover) .5 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 230.81 12.96 (Date) .5 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 17.26 209.54 (Turnover \(%\)) .5 0 90 t
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -144,7 +144,7 @@ np
 o
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -198,7 +198,7 @@ o
 43.93 333.51 (90) 1 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -293,7 +293,7 @@ np
 o
 -216.00 -216.00 648.00 648.00 cl
 55.26 50.08 406.35 368.99 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -415,20 +415,26 @@ np
 34.72 7.04 l
 33.59 -2.69 l
 o
+-216.00 -216.00 648.00 648.00 cl
+-216.00 -216.00 648.00 648.00 cl
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
+1 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
 55.26 50.08 351.09 318.90 r p1
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 201.00 403.25 (smi) 0 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 201.00 391.76 (cap.usd) 0 0 0 t
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -436,7 +442,7 @@ o
 10.00 setmiterlimit
 258.28 407.56 2.10 c p1
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap

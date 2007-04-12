@@ -8,11 +8,11 @@
 backtest(x,
          in.var,
          ret.var,
+         universe,
          by.var = NULL,
          date.var = NULL,
          id.var = NULL,
          buckets = 5,
-         universe = NULL,
          natural = FALSE)
 }
 \arguments{
@@ -117,7 +117,7 @@ summary(bt)
 
 bt <- backtest(starmine, in.var = "smi",
                ret.var = c("fwd.ret.1m", "fwd.ret.6m"),
-               universe = starmine$sector == "HiTec")
+               universe = sector == "HiTec")
 summary(bt)
 
 ## Running a natural backtest with 2 'in.vars', 1 'ret.var'

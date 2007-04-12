@@ -25,8 +25,8 @@
 /c   { newpath 0 360 arc } def
 /r   { 4 2 roll moveto 1 copy 3 -1 roll exch 0 exch rlineto 0 rlineto -1 mul 0 exch rlineto closepath } def
 /p1  { stroke } def
-/p2  { gsave bg setrgbcolor fill grestore newpath } def
-/p3  { gsave bg setrgbcolor fill grestore stroke } def
+/p2  { gsave bg fill grestore newpath } def
+/p3  { gsave bg fill grestore stroke } def
 /t   { 6 -2 roll moveto gsave rotate
        ps mul neg 0 2 1 roll rmoveto
        1 index stringwidth pop
@@ -82,15 +82,15 @@ bp
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 /ps 14 def /Font2 findfont 14 s
-0 0 0 rgb
+0 setgray
 216.00 411.67 (Cumulative Spread Return) .5 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 10.40 333.46 (Return \(%\)) .5 0 90 t
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -118,7 +118,7 @@ np
 o
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -152,7 +152,7 @@ o
 34.67 364.59 (20) 1 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -187,14 +187,14 @@ o
 -216.00 -216.00 648.00 648.00 cl
 46.01 289.95 229.61 376.98 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 55.19 366.16 (Total return: -3.9) 0 0 0 t
 46.01 289.95 229.61 376.98 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 55.19 294.31 (Worst drawdown: -8) 0 0 0 t
 46.01 289.95 229.61 376.98 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -222,12 +222,19 @@ np
 15.94 -2.46 l
 16.48 -0.13 l
 o
-0 0 0 rgb
+-216.00 -216.00 648.00 648.00 cl
+-216.00 -216.00 648.00 648.00 cl
+0 setgray
+0.75 setlinewidth
+[] 0 setdash
+1 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
 46.01 289.95 183.60 87.02 r p1
 -216.00 -216.00 648.00 648.00 cl
-46.01 376.98 229.61 391.38 cl
-/bg { 0.9490 0.9490 0.9490 } def
-0.9490 0.9490 0.9490 rgb
+-216.00 -216.00 648.00 648.00 cl
+/bg { 0.9490 setgray } def
+0.9490 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -235,13 +242,13 @@ o
 10.00 setmiterlimit
 46.01 376.98 183.60 14.40 r p3
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 117.01 379.87 (cap.usd) 0 0 0 t
 46.01 376.98 183.60 14.40 r p1
-46.01 376.98 229.61 391.38 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+-216.00 -216.00 648.00 648.00 cl
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -271,7 +278,7 @@ o
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -326,14 +333,14 @@ o
 -216.00 -216.00 648.00 648.00 cl
 229.61 289.95 413.21 376.98 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 238.79 366.16 (Total return: 23) 0 0 0 t
 229.61 289.95 413.21 376.98 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 238.79 294.31 (Worst drawdown: --) 0 0 0 t
 229.61 289.95 413.21 376.98 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -352,11 +359,19 @@ np
 16.48 1.30 l
 15.95 4.09 l
 o
+-216.00 -216.00 648.00 648.00 cl
+-216.00 -216.00 648.00 648.00 cl
+0 setgray
+0.75 setlinewidth
+[] 0 setdash
+1 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
 229.61 289.95 183.60 87.02 r p1
 -216.00 -216.00 648.00 648.00 cl
-229.61 376.98 413.21 391.38 cl
-/bg { 0.9490 0.9490 0.9490 } def
-0.9490 0.9490 0.9490 rgb
+-216.00 -216.00 648.00 648.00 cl
+/bg { 0.9490 setgray } def
+0.9490 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -364,28 +379,28 @@ o
 10.00 setmiterlimit
 229.61 376.98 183.60 14.40 r p3
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 312.08 379.87 (smi) 0 0 0 t
 229.61 376.98 183.60 14.40 r p1
-229.61 376.98 413.21 391.38 cl
+-216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 /ps 14 def /Font2 findfont 14 s
-0 0 0 rgb
+0 setgray
 216.00 246.56 (Cumulative Quantile Return) .5 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 227.16 7.78 (Date) .5 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 12.84 126.57 (Return \(%\)) .5 0 90 t
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -413,7 +428,7 @@ np
 o
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -442,7 +457,7 @@ o
 32.23 174.47 (30) 1 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -476,7 +491,7 @@ o
 200.48 24.65 (Nov) .5 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 43.56 43.17 227.16 209.96 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -555,13 +570,19 @@ np
 16.47 10.41 l
 15.95 8.08 l
 o
+-216.00 -216.00 648.00 648.00 cl
+-216.00 -216.00 648.00 648.00 cl
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
+1 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
 43.56 43.17 183.60 166.79 r p1
 -216.00 -216.00 648.00 648.00 cl
-43.56 209.96 227.16 224.36 cl
-/bg { 0.9490 0.9490 0.9490 } def
-0.9490 0.9490 0.9490 rgb
+-216.00 -216.00 648.00 648.00 cl
+/bg { 0.9490 setgray } def
+0.9490 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -569,13 +590,13 @@ o
 10.00 setmiterlimit
 43.56 209.96 183.60 14.40 r p3
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 114.56 212.86 (cap.usd) 0 0 0 t
 43.56 209.96 183.60 14.40 r p1
-43.56 209.96 227.16 224.36 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+-216.00 -216.00 648.00 648.00 cl
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -605,7 +626,7 @@ o
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -655,7 +676,7 @@ np
 o
 -216.00 -216.00 648.00 648.00 cl
 227.16 43.17 410.76 209.96 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -734,13 +755,19 @@ np
 16.47 11.78 l
 15.95 5.14 l
 o
+-216.00 -216.00 648.00 648.00 cl
+-216.00 -216.00 648.00 648.00 cl
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
+1 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
 227.16 43.17 183.60 166.79 r p1
 -216.00 -216.00 648.00 648.00 cl
-227.16 209.96 410.76 224.36 cl
-/bg { 0.9490 0.9490 0.9490 } def
-0.9490 0.9490 0.9490 rgb
+-216.00 -216.00 648.00 648.00 cl
+/bg { 0.9490 setgray } def
+0.9490 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -748,10 +775,10 @@ o
 10.00 setmiterlimit
 227.16 209.96 183.60 14.40 r p3
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 309.63 212.86 (smi) 0 0 0 t
 227.16 209.96 183.60 14.40 r p1
-227.16 209.96 410.76 224.36 cl
+-216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
@@ -759,30 +786,30 @@ o
 -216.00 -216.00 648.00 648.00 cl
 -216.00 -216.00 648.00 648.00 cl
 /ps 12 def /Font1 findfont 12 s
-0 0 0 rgb
+0 setgray
 80.96 194.44 (quantile) .5 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 49.11 182.23 (high) 0 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 49.11 172.88 (Q4) 0 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 49.11 163.54 (Q3) 0 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 49.11 154.20 (Q2) 0 0 0 t
 -216.00 -216.00 648.00 648.00 cl
 /ps 9 def /Font1 findfont 9 s
-0 0 0 rgb
+0 setgray
 49.11 144.86 (low) 0 0 0 t
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [] 0 setdash
 1 setlinecap
@@ -793,7 +820,7 @@ np
 33.36 0 l
 o
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [ 3.00 5.00] 0 setdash
 1 setlinecap
@@ -804,7 +831,7 @@ np
 33.36 0 l
 o
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [ 0.00 4.00] 0 setdash
 1 setlinecap
@@ -815,7 +842,7 @@ np
 33.36 0 l
 o
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [ 0.00 4.00 3.00 4.00] 0 setdash
 1 setlinecap
@@ -826,7 +853,7 @@ np
 33.36 0 l
 o
 -216.00 -216.00 648.00 648.00 cl
-0 0 0 rgb
+0 setgray
 0.75 setlinewidth
 [ 6.00 4.00] 0 setdash
 1 setlinecap

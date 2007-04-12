@@ -1,0 +1,9 @@
+Version: 0.1-2 (2007-04-12, released)
+
+	* Fixed handling of the universe parameter.
+
+	* Added stop if there are quantiles with no observations.  Usually
+	occurs with very little or very regular (usually synthesized)
+	data.
+ 	
+	* Updated 'backtest' vignette.

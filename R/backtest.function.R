@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.function.R 351 2006-10-02 00:22:20Z enos $
+## $Id: backtest.function.R 398 2007-04-12 17:10:04Z enos $
 ##
 ## Returns an object of class backtest
 ##
@@ -21,11 +21,11 @@
 backtest <- function(x,
                      in.var,
                      ret.var,
+                     universe,
                      by.var   = NULL,
                      date.var = NULL,
                      id.var   = NULL,
                      buckets  = 5,
-                     universe = NULL,
                      natural  = FALSE){
 
   ## Corner Case: only one by.var allowed
@@ -104,7 +104,7 @@ backtest <- function(x,
   
   ## Evaluate "universe"
   
-  if(!is.null(universe)){
+  if(!missing(universe)){
     univ <- eval(substitute(universe), x, parent.frame())
     univ <- univ & !is.na(univ)
     x <- x[univ,]
@@ -201,6 +201,11 @@ backtest <- function(x,
 
       in.factor <- categorize(x[[i]], n = buckets[1])
       trim.in.factor <- categorize(trim.x[[i]], n = buckets[1])
+
+      if(length(levels(in.factor)) != buckets[1] ||
+         length(levels(trim.in.factor)) != buckets[1]){
+        stop("Encountered quantiles with no observations.  This can occur with very little data or very regular (usually synthesized) data.")
+      }
       
       ## Bucketize means
       
@@ -215,7 +220,7 @@ backtest <- function(x,
                                              compute = length)
       
       ## Bucketize trim.means
-      
+
       results[r,i, , ,"trim.means"] <- bucketize(trim.x[[r]], x.factor =
                                                  trim.in.factor, y.factor =
                                                  trim.x$by.factor, compute
