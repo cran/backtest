@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: categorize.R 342 2006-10-01 05:02:50Z enos $
+## $Id: categorize.R 439 2007-06-28 14:56:34Z narayan $
 ##
 ## Returns a factor corresponding to vector "x"
 ##
@@ -9,10 +9,10 @@
 ## Not sure if we will keep the is.date parameter here.
 
 categorize <- function(x, n, is.date = FALSE){
-
+  
   ## "new.factor" is a factor grouping "x" by "in.var". If x[[in.var]]
   ## is numeric, groups into "n" buckets
-
+  
   ## We want to be able to use date-time classes as by.var's as well,
   ## so include a check for them here.
   
@@ -25,6 +25,6 @@ categorize <- function(x, n, is.date = FALSE){
   else{
     new.factor <- factor(as.character(x), ordered = FALSE)
   }
-
+  
   invisible(new.factor)
 }

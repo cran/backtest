@@ -143,7 +143,7 @@ Backtests are run by calling the function \texttt{backtest} to
 produce an object of class \texttt{backtest}.
 
 <<echo = TRUE>>=
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m")
+bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.period = FALSE)
 @
 
 \texttt{starmine} is a data frame containing all the information
@@ -223,7 +223,7 @@ using \texttt{fwd.ret.1m}. This is the only return value in
 <<natural portfolio>>=
 bt <- backtest(starmine, id.var = "id",
                date.var = "date", in.var = "smi",
-               ret.var = "fwd.ret.1m", natural = TRUE)
+               ret.var = "fwd.ret.1m", natural = TRUE, by.period = FALSE)
 @
 
 Natural backtests require a \texttt{date.var} and \texttt{id.var}, the
@@ -311,7 +311,8 @@ bt <- backtest(starmine,
                      date.var = "date",
                      in.var = c("smi", "cap.usd"),
                      ret.var = "fwd.ret.1m",
-                     natural = TRUE)
+                     natural = TRUE,
+                     by.period = FALSE)
 @ 
 
 <<echo=false>>=
@@ -408,7 +409,7 @@ options(digits = 1, width = 50)
 @
 
 <<sector backtest>>=
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.var = "sector")
+bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.var = "sector", by.period = FALSE)
 @ 
 
 <<echo=FALSE>>=
@@ -456,7 +457,7 @@ options(digits = 1, width = 30)
 @
 
 <<market cap, echo=TRUE>>=
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.var = "cap.usd", buckets = c(5, 10))
+bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.var = "cap.usd", buckets = c(5, 10), by.period = FALSE)
 @ 
 
 <<echo=false>>=
@@ -486,7 +487,7 @@ considers one month and six month forward returns together:
 
 <<echo = TRUE>>=
 bt <- backtest(starmine, in.var = "smi", buckets = 4,
-               ret.var = c("fwd.ret.1m", "fwd.ret.6m"))
+               ret.var = c("fwd.ret.1m", "fwd.ret.6m"), by.period = FALSE)
 @ 
 
 <<echo=false>>=

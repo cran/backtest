@@ -9,11 +9,14 @@ backtest(x,
          in.var,
          ret.var,
          universe,
-         by.var = NULL,
-         date.var = NULL,
-         id.var = NULL,
-         buckets = 5,
-         natural = FALSE)
+         by.var    = NULL,
+         date.var  = NULL,
+         id.var    = NULL,
+         buckets   = 5,
+         natural   = FALSE,
+         do.spread = TRUE,
+         by.period = TRUE,
+         overlaps  = 1)
 }
 \arguments{
   \item{x}{A data frame containing the data to be analysed in the
@@ -33,7 +36,9 @@ backtest(x,
   \item{date.var}{An optional character vector which indicates the name
     of the column in \code{x} to be used as a date for each
     observation. \code{date.var} must be specified if \code{natural} is
-    TRUE.}
+    TRUE.  In order to call \code{plot}, the contents of \code{date.var}
+    must be of class \code{Date} or be coercible to an object of class
+    \code{Date} via \code{as.Date}.}
   \item{buckets}{An optional numeric vector which specifies how many
     quantiles to create according to \code{in.var} and \code{by.var}.}
   \item{universe}{An optional expression for selecting a subset of \code{x}.
@@ -44,6 +49,21 @@ backtest(x,
     plotted.  The details of how a natural backtest differs from a pooled
     backtest are given below.
   }
+  \item{do.spread}{An optional logical value. If TRUE the \code{summary}
+    method displays information about the spread between the extreme
+    quantiles.  If FALSE this information is suppressed.  Defaults to TRUE.
+    }
+  \item{by.period}{An optional logical value. If TRUE the quantiles are
+    recalculated within each date period.  If FALSE the quantiles are
+    calculated all at once.  Defaults to TRUE.
+  }
+  \item{overlaps}{An optional integer which specifies how many periods
+    to combine portfolios of in order to weight a current period.  If
+    \code{overlaps} is the default of 1, backtest behaves as normal and only uses a
+    periods own data to determine the portfolio.  If \code{overlaps} is set to
+    n > 1, a period's portfolio is calculated by giving 1/n weight to
+    the previous n periods.
+    }
 }
 
 \details{
@@ -93,13 +113,13 @@ data(starmine)
 
 ## Backtest with 1 'in.var' and 1 'ret.var'
 
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m")
+bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.period = FALSE)
 summary(bt)
 
 ## Backtest with 2 'in.var' values, 1 'ret.var', and a 'by.var'
 
 bt <- backtest(starmine, in.var = c("smi", "cap.usd"),
-               ret.var = "fwd.ret.1m", by.var = "sector")
+               ret.var = "fwd.ret.1m", by.var = "sector", by.period = FALSE)
 summary(bt)
 
 ## Backtest with 1 'in.var', 1 'by.var', and 1 'ret.var'.  Number of
@@ -109,7 +129,7 @@ summary(bt)
 ## unique category.
 
 bt <- backtest(starmine, in.var = "smi", by.var = "sector",
-               ret.var = "fwd.ret.1m", buckets = 4)
+               ret.var = "fwd.ret.1m", buckets = 4, by.period = FALSE)
 summary(bt)
 
 ## Backtest with 1 'in.var', multiple 'ret.var', and a
@@ -117,7 +137,7 @@ summary(bt)
 
 bt <- backtest(starmine, in.var = "smi",
                ret.var = c("fwd.ret.1m", "fwd.ret.6m"),
-               universe = sector == "HiTec")
+               universe = sector == "HiTec", by.period = FALSE)
 summary(bt)
 
 ## Running a natural backtest with 2 'in.vars', 1 'ret.var'
@@ -126,7 +146,15 @@ summary(bt)
 bt <- backtest(starmine, in.var = c("smi","cap.usd"),
                ret.var = "fwd.ret.1m", date.var = "date",
                id.var = "id", buckets = 10,
-               natural = TRUE)
+               natural = TRUE, by.period = FALSE)
+summary(bt)
+
+## The same backtest, but calculating quantiles within periods.
+
+bt <- backtest(starmine, in.var = c("smi","cap.usd"),
+               ret.var = "fwd.ret.1m", date.var = "date",
+               id.var = "id", buckets = 10,
+               natural = TRUE, by.period = TRUE)
 summary(bt)
 
 plot(bt, type = "turnover")

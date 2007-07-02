@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.R 355 2006-10-02 01:47:31Z enos $
+## $Id: backtest.R 458 2007-07-02 17:09:56Z enos $
 ##
 ## Result object for a backtest
 ##
@@ -23,7 +23,10 @@ setClass("backtest", representation(in.var        = "character",
                                     summary.stats = "data.frame",
                                     ret.stats     = "array",
                                     turnover      = "array",
-                                    natural       = "logical"),
+                                    natural       = "logical",
+                                    do.spread     = "logical",
+                                    by.period     = "logical",
+                                    overlaps      = "numeric"),
          
          prototype(in.var        = "in.var",
                    ret.var       = "ret.var",
@@ -34,7 +37,10 @@ setClass("backtest", representation(in.var        = "character",
                    summary.stats = data.frame(),
                    ret.stats     = array(dim = c(1,6)),
                    turnover      = array(),
-                   natural       = FALSE),
+                   natural       = FALSE,
+                   do.spread     = TRUE,
+                   by.period     = TRUE,
+                   overlaps      = 1),
 
          validity = function(object){
 
@@ -101,7 +107,11 @@ setMethod("summary",
                                                " ret.var: ", " ret.vars: "),
                 paste(object@ret.var, collapse = ", "), ";\nand ",
                 ifelse(length(object@by.var) > 0,
-                       paste("by.var: ", object@by.var, sep = ""), "no by.var"),
+                       paste("by.var: ", object@by.var, sep = ""), "no by.var"), ";\n",
+                ifelse(isTRUE(object@do.spread),
+                       "do.spread: TRUE", "do.spread: FALSE"), ";\n",
+                ifelse(isTRUE(object@by.period),
+                       "by.period: TRUE", "by.period: FALSE"),
                 ".\n\n", sep = "")
 
             ## Matrix
@@ -112,28 +122,30 @@ setMethod("summary",
                                               "TURNOVER")])
             cat("\n")
 
-            if(object@natural){
-              if(length(object@in.var) == 1){
-
-                cat("average turnover: ", .bt.mean(turnover(object)),
-                    "\nmean spread: ", mean(summaryStats(object)[, "spread"]),
-                    "\nsd spread: ", sd(summaryStats(object)[, "spread"]),
-                    "\nraw sharpe ratio: ", .bt.sharpe(object), "\n\n",
-                    sep = "")
-              }
-              else{
-                
-                for(i in object@in.var){
-
-                  x <- summaryStats(object)
-                  cat("summary stats for in.var = ", i,
-                      ":\n\naverage turnover: ",
-                      .bt.mean(turnover(object))[1,i],
-                      "\nmean spread: ",
-                      colMeans(summaryStats(object), na.rm = TRUE)[i],
-                      "\nsd spread: ", sd(x[,i], na.rm = TRUE),
-                      "\nraw sharpe ratio: ", .bt.sharpe(object)[,i],
-                      "\n\n", sep = "")
+            if(isTRUE(object@do.spread)){
+              if(object@natural){
+                if(length(object@in.var) == 1){
+                  
+                  cat("average turnover: ", .bt.mean(turnover(object)),
+                      "\nmean spread: ", mean(summaryStats(object)[, "spread"]),
+                      "\nsd spread: ", sd(summaryStats(object)[, "spread"]),
+                      "\nraw sharpe ratio: ", .bt.sharpe(object), "\n\n",
+                      sep = "")
+                }
+                else{
+                  
+                  for(i in object@in.var){
+                    
+                    x <- summaryStats(object)
+                    cat("summary stats for in.var = ", i,
+                        ":\n\naverage turnover: ",
+                        .bt.mean(turnover(object))[1,i],
+                        "\nmean spread: ",
+                        colMeans(summaryStats(object), na.rm = TRUE)[i],
+                        "\nsd spread: ", sd(x[,i], na.rm = TRUE),
+                        "\nraw sharpe ratio: ", .bt.sharpe(object)[,i],
+                        "\n\n", sep = "")
+                  }
                 }
               }
             }
@@ -188,11 +200,10 @@ setMethod("summaryStats",
                 n <- array(n, dim = dim(output),
                            dimnames = dimnames(output))
               }
-              
-              spread <- .bt.spread(output, n, object@ret.stats[1,"sd"])
-
-              output <- cbind(output, spread)
-              
+              if(isTRUE(object@do.spread)){
+                spread <- .bt.spread(output, n, object@ret.stats[1,"sd"])
+                output <- cbind(output, spread)
+              }
               if(object@natural){
                 turnover <- object@turnover
                 dimnames(turnover)[[2]] <- "TURNOVER"
@@ -239,12 +250,13 @@ setMethod("summaryStats",
               output <- object@results[ ,1,1, ,"means"]
 
               n <- object@results[ ,1,1, ,"counts"]
-              
-              spread <- .bt.spread(output, n, object@ret.stats[ ,"sd"])
-
-              output <- cbind(output, spread)
+              if(isTRUE(object@do.spread)){
+                spread <- .bt.spread(output, n, object@ret.stats[ ,"sd"])
+                
+                output <- cbind(output, spread)
+              }
             }
-
+            
             ## Case 5: multiple in.vars and ret.vars
 
             if(num.in > 1 && num.ret > 1){
@@ -429,9 +441,13 @@ setMethod("plot",
 
   turnovers <- 100 * as.data.frame(turnovers)
 
-  ## We might want to think about what to do here if we can't turn the
-  ## rownames of the turnover matrix to Date objects.
+  ## Stop informatively if we can't call as.Date on what was the
+  ## contents of the date.var column.
   
+  if(inherits(try(as.Date(rownames(turnovers)), silent = TRUE), "try-error")){
+    stop(paste("Error converting dates: Please ensure contents of date.var",
+               "column cate be converted to Date's via as.Date."))
+  }
   datevar <- as.Date(rownames(turnovers))
   
   invars <- names(turnovers)[1]
@@ -531,6 +547,12 @@ setMethod("plot",
                                 perl = TRUE)
 
     this.returns$group <- names(returns)[i]
+
+    if(inherits(try(as.Date(rownames(this.returns)), silent = TRUE), "try-error")){
+      stop(paste("Error converting dates: Please ensure contents of date.var",
+                 "column cate be converted to Date's via as.Date."))
+    }
+
     this.returns$date <- as.Date(rownames(this.returns))
     new.returns <- rbind(new.returns, this.returns)
   }
@@ -610,6 +632,12 @@ setMethod("plot",
                                 perl = TRUE)
     
     this.returns$group <- names(returns)[i]
+
+    if(inherits(try(as.Date(rownames(this.returns)), silent = TRUE), "try-error")){
+      stop(paste("Error converting dates: Please ensure contents of date.var",
+                 "column cate be converted to Date's via as.Date."))
+    }
+
     this.returns$date <- as.Date(rownames(this.returns))
     new.returns <- rbind(new.returns, this.returns)
   }

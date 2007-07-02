@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: calc.turnover.R 342 2006-10-01 05:02:50Z enos $
+## $Id: calc.turnover.R 439 2007-06-28 14:56:34Z narayan $
 ##
 ## Calculates the turnover for a long-short portfolio
 ## corresponding to a backtest.
@@ -33,13 +33,13 @@ calc.turnover <- function(x, portfolio.factor, date.factor){
   data <- split(data, portfolio.factor)
   data <- data[sort(names(data))]
   
-  data[[1]]$longshort <- "long"
-  data[[length(data)]]$longshort <- "short"
-
+  data[["high"]]$longshort <- "long"
+  data[["low"]]$longshort <- "short"
+  
   ## Discard all rows except those in the "high" and "low" buckets
   
-  data <- rbind(data[[1]], data[[length(data)]])
-
+  data <- rbind(data[["high"]], data[["low"]])
+  
   data$longshort <- factor(data$longshort, levels = c("long", "short"))
   
   ## Split by date
@@ -50,60 +50,60 @@ calc.turnover <- function(x, portfolio.factor, date.factor){
   ## Array of turnovers for each date
   
   result <- array(dim = length(data), dimnames = list(names(data)))
-
+  
   ## First date has no turnover
-
+  
   last.portfolio <- list(subset(data[[1]], data[[1]]$longshort == "long"),
                          subset(data[[1]], data[[1]]$longshort == "short"))
   
   result[1] <- NA
   
   ## Loop through dates
-
+  
   if(length(data) > 1){
     for(k in 2:length(data)){
-
+      
       ## Split next portfolio by long/short
-
+      
       new.portfolio <- list(subset(data[[k]], data[[k]]$longshort == "long"),
                             subset(data[[k]], data[[k]]$longshort == "short"))
       
       turnovers <- numeric()
-
+      
       ## Loop both sides of portfolio
-
+      
       for(i in 1:2){
-
+        
         ## Which stocks are in this side of the portfolio?
         
         stocks <- union(as.character(new.portfolio[[i]]$x),
                         as.character(last.portfolio[[i]]$x))
-
+        
         ## Create stock table for this side of the portfolio
         
         stock.table <- array(0, dim = c(length(stocks), 2),
                              dimnames = list(stocks, c("last", "new")))
         
         ## Calculate weights for last portfolio
-
+        
         stock.table[as.character(last.portfolio[[i]]$x),"last"] <-
           100/nrow(last.portfolio[[i]])
-
+        
         ## Calculate weights for new portfolio
-
+        
         stock.table[as.character(new.portfolio[[i]]$x),"new"] <-
           100/nrow(new.portfolio[[i]])
-
+        
         ## Store amount traded for each stock
         
         turnovers <- c(turnovers, abs(stock.table[ ,"last"] -
                                       stock.table[ ,"new"]))
       }
-
+      
       ## Calculate turnover
       
       result[k] <- sum(turnovers)/400
-
+      
       last.portfolio <- new.portfolio
       
     }

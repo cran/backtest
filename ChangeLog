@@ -1,3 +1,14 @@
+Version: 0.2-0 (2007-07-02, released)
+
+	* Added overlaps feature for controlling turnover.
+
+	* The user may specify a factor as in.var to define quantiles.
+
+	* Added by.period option for calculating quantiles within periods,
+	now the default.
+
+	* Added do.spread option to toggle spread calculation.
+	
 Version: 0.1-2 (2007-04-12, released)
 
 	* Fixed handling of the universe parameter.

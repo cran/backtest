@@ -143,7 +143,7 @@ elements: \code{means}, \code{counts}, \code{trim.means}, and
 \examples{
 
 data(starmine)
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m")
+bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.period = FALSE)
 
 ## Summary for a pooled backtest
 
@@ -152,7 +152,7 @@ summary(bt)
 ## A natural backtest
 
 bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m",
-               date.var = "date", id.var = "id", natural = TRUE)
+               date.var = "date", id.var = "id", natural = TRUE, by.period = FALSE)
 
 ## Summary for a natural backtest
 

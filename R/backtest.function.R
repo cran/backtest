@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.function.R 398 2007-04-12 17:10:04Z enos $
+## $Id: backtest.function.R 459 2007-07-02 18:00:01Z enos $
 ##
 ## Returns an object of class backtest
 ##
@@ -22,16 +22,35 @@ backtest <- function(x,
                      in.var,
                      ret.var,
                      universe,
-                     by.var   = NULL,
-                     date.var = NULL,
-                     id.var   = NULL,
-                     buckets  = 5,
-                     natural  = FALSE){
+                     by.var    = NULL,
+                     date.var  = NULL,
+                     id.var    = NULL,
+                     buckets   = 5,
+                     natural   = FALSE,
+                     do.spread = TRUE,
+                     by.period = TRUE,
+                     overlaps  = 1){
 
+  
+  ## Corner Case: only one in.var of class factor allowed per backtest
+  
+  if(length(in.var) > 1){
+    if(any(sapply(x[in.var], class) == "factor") ||
+       any(sapply(x[in.var], class) == "character")){
+        stop("Only one in.var of class factor or character allowed.")
+    }
+  }
+ 
   ## Corner Case: only one by.var allowed
   
   if(length(by.var) > 1){
-    stop("Only one by.var allowed per backtest")
+    stop("Only one by.var allowed per backtest.")
+  }
+
+  ## Corner Case: only one id.var allowed
+
+  if(length(id.var) > 1){
+    stop("Only one id.var allowed per backtest.")
   }
   
   ## Corner Case: only one by.var allowed when using multiple ret.var
@@ -43,22 +62,27 @@ backtest <- function(x,
   ## Must provide minimum of one in.var and one ret.var
 
   if(length(in.var) < 1 || length(ret.var) < 1){
-    stop("At least one in.var and ret.var required")
+    stop("At least one in.var and ret.var required.")
   }
-  
+
+  ## Only one date.var is allowed
+
+  if(length(date.var) > 1){
+    stop("Only one date.var is allowed.")
+  }
+
   ## Natural backtests must have dates and ids.
   
   if(natural && (is.null(date.var) || is.null(id.var))){
     stop("Must specify date.var and id.var for a natural backtest.")
   }
 
-  ## in.var and ret.var columns must be numeric
-
-  stopifnot(
-            all(sapply(x[in.var], class) == "numeric"),
-            all(sapply(x[ret.var], class) == "numeric")
-            )
-
+  ## ret.var columns must be numeric
+  
+  if(!all(sapply(x[ret.var], class) == "numeric")){
+    stop("All ret.var columns must be numeric")
+  }
+  
   ## Check "buckets"
 
   if(is.null(by.var)){
@@ -69,7 +93,37 @@ backtest <- function(x,
       buckets[2] <- buckets[1]
     }
   }
- 
+  
+  ## If overlaps is greater than 1, a date.var is required.
+
+  if(overlaps > 1 && is.null(date.var)){
+    stop("If overlaps is greater than 1, a date.var is required.")
+  }
+
+  ## If overlaps is greater than 0, in.var must be of length one and numeric.
+
+  if(overlaps > 1 && length(in.var) == 1 && !is.numeric(x[in.var])){
+    stop("If overlaps is greater than 1, in.var must be of length one and numeric.")
+  }
+
+  ## Overlap option must include id.var
+  
+  if(overlaps > 1 && length(id.var) <= 1){
+    stop("If overlaps is greater than 1, there must be an id.var.")
+  }
+
+
+  ## Overlaps must be less than the number of periods
+
+  if(overlaps != 1 && overlaps > length(unique(x[date.var]))){
+    stop("Overlaps must be less than the number of periods.")
+  }
+
+  ## If overlaps > 1, can only use one ret.var
+  
+  if(overlaps > 1 && length(ret.var) > 1){
+    stop("The multiple overlap option can only accept one ret.var.")
+  }
   
   ## At a minimum, the length of in.var must be greater than the
   ## number of buckets.  Otherwise, we will get an error when we try
@@ -85,6 +139,13 @@ backtest <- function(x,
   if(!is.null(by.var) && sum(!is.na(x[by.var])) < (buckets[2] - 5)){
     stop("The number of non-NA by.var must be at least 5 more than the number of buckets.")
   }
+
+  ## Check for by.period and date
+
+  if(isTRUE(by.period) && is.null(date.var)){
+    stop("date.var required if by.period = TRUE (the default)")
+  }
+
   
   ## Save by.var for by.var slot
   
@@ -107,13 +168,7 @@ backtest <- function(x,
   if(!missing(universe)){
     univ <- eval(substitute(universe), x, parent.frame())
     univ <- univ & !is.na(univ)
-    x <- x[univ,]
-  }
-
-  ## Function for bucketing NA values
-
-  na.count <- function(x){
-    return(sum(is.na(x)))
+    x    <- x[univ,]
   }
   
   ## Attach "by.var" factor to "x"
@@ -129,123 +184,96 @@ backtest <- function(x,
       x$by.factor <- categorize(x[[by.var]], n = buckets[2], is.date = TRUE)
     }
   }
-
   
-  ## Create array for storing turnover.  Dimensions signify:
-  ## 1. date
-  ## 2. in.var
-
-  if(natural){
-    turnover <- array(dim = c(length(levels(x$by.factor)), length(in.var)),
-                      dimnames = list(levels(x$by.factor), in.var))
-  }
-  else
-    turnover <- array()
+  ## Factor a character in.var
   
-  ## Construct by.var row names
-
-  by.names <- levels(x$by.factor)
-  if(!is.null(by.var) && is.numeric(x[[by.var]]) && is.null(date.var)){
-    by.names[1] <- "low"
-    by.names[length(by.names)] <- "high"
-  }
+  if(length(in.var) == 1 && is.character(x[in.var]))
+    x[in.var] <- as.factor(x[in.var])
   
-  ## Construct in.var column names
-
-  in.names <- 1:buckets[1]
-  in.names[1] <- "low"
-  in.names[length(in.names)] <- "high"
-
-  ## Construct the empty array.  The dimensions are ordered as follows:
-  ## 1: ret.var(s)
-  ## 2: in.var(s)
-  ## 3: by.var buckets
-  ## 4: in.var buckets
-  ## 5: means/counts/trim.means/NAs
-
-  results <- array(dim = c(length(ret.var), length(in.var),
-                     length(levels(x$by.factor)), buckets[1], 4),
-                   dimnames = list(ret.var, in.var, by.names,
-                     in.names, c("means", "counts", "trim.means", "NAs")))
-
-  ## Construct ret.stats array.
-
-  ret.stats <- array(dim = c(length(ret.var), 6), dimnames =
-                     list(ret.var, c("min", "max", "mean", "median",
-                                     "sd", "NA")))
+  ## Make sure in.var is a factor / factorized... by looping over in.var
   
-  ## Select ret.var
+  in.factor <- data.frame(array(dim = c(nrow(x), length(in.var)), dimnames = list(NULL,in.var)))
   
-  for(r in ret.var){
-
-    ## Trim most extreme .5% of ret.var values
+  ## Intialize weights
+  
+  x$weight <- 1
+  
+  ## Build buckets
+  
+  for(i in in.var){
     
-    trim.range <- quantile(x[[r]], c(0.0025, 0.9975), na.rm=TRUE)
-    trim.x <- subset(x, trim.range[[1]] < x[[r]] &
-                     x[[r]] < trim.range[[2]])
+    ## If in.var is not a factor (is numeric)
 
-    ## Store ret.stats
-    
-    ret.stats[r,"min"] <- min(x[[r]], na.rm = TRUE)
-    ret.stats[r,"max"] <- max(x[[r]], na.rm = TRUE)
-    ret.stats[r,"mean"] <- mean(x[[r]], na.rm = TRUE)
-    ret.stats[r,"median"] <- median(x[[r]], na.rm = TRUE)
-    ret.stats[r,"sd"] <- sd(x[[r]], na.rm = TRUE)
-    ret.stats[r,"NA"] <- sum(is.na(x[[r]]))
-
-    ## Select in.var
-    
-    for(i in in.var){
-
-      ## Construct "in.var" factors for "x" and "trim.x"
-
-      in.factor <- categorize(x[[i]], n = buckets[1])
-      trim.in.factor <- categorize(trim.x[[i]], n = buckets[1])
-
-      if(length(levels(in.factor)) != buckets[1] ||
-         length(levels(trim.in.factor)) != buckets[1]){
-        stop("Encountered quantiles with no observations.  This can occur with very little data or very regular (usually synthesized) data.")
+    if(!is.factor(x[[i]])){
+      
+      if(by.period && !all(tapply(x[[i]], x[[date.var]],
+                                          function(x){
+                                            if(sum(!is.na(x)) < buckets[1]){
+                                              return(FALSE)
+                                            }
+                                            return(TRUE)
+                                          }
+                                          )
+                                   )
+         ){
+        stop("Not enough observations to fill each bucket by period.")
       }
       
-      ## Bucketize means
-      
-      results[r,i, , ,"means"] <- bucketize(x[[r]], x.factor = in.factor,
-                                            y.factor = x$by.factor,
-                                            compute = mean, na.rm = TRUE)
-      
-      ## Bucketize counts
-      
-      results[r,i, , ,"counts"] <- bucketize(x[[r]], x.factor = in.factor,
-                                             y.factor = x$by.factor,
-                                             compute = length)
-      
-      ## Bucketize trim.means
+      ## If we are doing by period, form buckets for every date 
 
-      results[r,i, , ,"trim.means"] <- bucketize(trim.x[[r]], x.factor =
-                                                 trim.in.factor, y.factor =
-                                                 trim.x$by.factor, compute
-                                                 = mean, na.rm = TRUE)
-
-      ## Bucketize NAs
-
-      results[r,i, , ,"NAs"] <- bucketize(x[[r]], x.factor = in.factor,
-                                          y.factor = x$by.factor,
-                                          compute = na.count)
+      if(by.period){
+        in.factor[[i]] <- as.factor(unsplit(lapply(split(x[[i]], x[[date.var]]),
+                                                   function(x){
+                                                     categorize(x, n = buckets[1])
+                                                   }),
+                                            x[[date.var]]))
+      }
       
-      ## Calculate Turnover
+      ## If we are not doing by period bucketizing, form all buckets simultaneously
 
-      if(natural){
-        turnover[, i] <- calc.turnover(x[[id.var]],
-                                       portfolio.factor = in.factor,
-                                       date.factor = x$by.factor)
+      else{
+        in.factor[[i]] <- categorize(x[[i]], n = buckets[1])
+      }
+      
+      
+      ## Name levels, the lowest bucket is the short part of the
+      ## portfolio, the highest bucket is the long part      
+
+      levels(in.factor[[i]])[1]          <- "low"
+      levels(in.factor[[i]])[buckets[1]] <- "high"
+      
+      ## Make sure there is data in every bucket
+      
+      if(length(levels(in.factor[[i]])) != buckets[1]){
+        stop(paste("Encountered quantiles with no observations.  This can",
+                   "occur with very little data or very regular",
+                   "(usually synthesized) data."))
+      }
+          
+      ## Recalculate weights based on overlaps
+
+      if(overlaps > 1){
+        levels(in.factor[[i]])[1]                <- "low"
+        levels(in.factor[[i]])[buckets[1]]       <- "high"
+        levels(in.factor[[i]])[2:buckets[1] - 1] <- "mid"
+        
+        x <- overlaps.compute(x, in.factor[[i]], date.var, id.var, overlaps)
+
+        
       }
     }
-  }
+
     
-  ## Create and return backtest object
+    ## If the in.var is a factor, just set in.factor to the in.var
+
+    else{
+      in.factor[[i]] <- x[[i]]
+    }
+  }
   
-  invisible(new("backtest", in.var = in.var, ret.var = ret.var, by.var =
-                as.character(by.specified), date.var = as.character(date.var),
-                buckets = buckets, results = results, ret.stats = ret.stats,
-                turnover = turnover, natural = natural))
+
+  
+  invisible(backtest.compute(x, in.factor, ret.var, by.var, date.var,
+                             natural, by.specified, do.spread, id.var,
+                             by.period, overlaps)) 
 }
