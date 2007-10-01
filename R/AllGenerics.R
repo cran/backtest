@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: AllGenerics.R 342 2006-10-01 05:02:50Z enos $
+## $Id: AllGenerics.R 1227 2007-10-01 18:50:15Z enos $
 ##
 ## Generic functions for the backtest class
 ##

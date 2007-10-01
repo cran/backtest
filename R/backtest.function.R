@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.function.R 459 2007-07-02 18:00:01Z enos $
+## $Id: backtest.function.R 1227 2007-10-01 18:50:15Z enos $
 ##
 ## Returns an object of class backtest
 ##

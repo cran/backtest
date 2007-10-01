@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: bt.sharpe.R 351 2006-10-02 00:22:20Z enos $
+## $Id: bt.sharpe.R 1227 2007-10-01 18:50:15Z enos $
 ##
 ## Returns a one-dimensional array of sharpe ratios
 ##

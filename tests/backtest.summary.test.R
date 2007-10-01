@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.summary.test.R 435 2007-06-28 13:35:47Z narayan $
+## $Id: backtest.summary.test.R 1227 2007-10-01 18:50:15Z enos $
 ##
 ## Tests to make sure the summary method doesn't crash
 ##

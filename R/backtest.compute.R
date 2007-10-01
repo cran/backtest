@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.compute.R 398 2007-04-12 17:10:04Z suo,schwartz $
+## $Id: backtest.compute.R 1227 2007-10-01 18:50:15Z enos $
 ##
 ## Returns backtest class
 ##
