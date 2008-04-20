@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: bt.mean.R 1227 2007-10-01 18:50:15Z enos $
+## $Id: bt.mean.R 342 2006-10-01 05:02:50Z enos $
 ##
 ## Calculates the means by column and returns a
 ## 1 x length(x) array where the values are the means
