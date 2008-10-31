@@ -4,8 +4,10 @@
 
 \alias{show,backtest-method}
 \alias{summary,backtest-method}
+\alias{summaryStats,backtest-method}
 \alias{means,backtest-method}
 \alias{counts,backtest-method}
+\alias{totalCounts,backtest-method}
 \alias{marginals,backtest-method}
 \alias{naCounts,backtest-method}
 \alias{turnover,backtest-method}
@@ -14,6 +16,8 @@
 
 \alias{means}
 \alias{counts}
+\alias{summaryStats}
+\alias{totalCounts}
 \alias{marginals}
 \alias{naCounts}
 \alias{turnover}
@@ -68,6 +72,10 @@
     \item{summary}{\code{signature(object = "backtest")}: Prints
       the results of the backtest.
     }
+    \item{summaryStats}{\code{signature(object = "backtest")}:
+      Returns a data frame with spreads for each \code{date.var} value and each
+      \code{in.var}.
+    }
     \item{means}{\code{signature(object = "backtest")}: Returns a list
       of matrices, with one matrix for each \code{in.var}, where the
       value of each cell is the mean of the returns for that
@@ -77,6 +85,12 @@
       of matrices, with one matrix for each \code{in.var}, where the
       value of each cell is the number of observations for that
       \code{in.var} and \code{by.var} combination.
+    }
+    \item{totalCounts}{\code{signature(object = "backtest")}: Returns a
+      data frame in the same format as the speads data frame returned by \code{summaryStats}: 
+      contains the sum of counts for all buckets (or high and
+      low buckets if argument \code{low.high.only} is set to TRUE) of non-NA
+      \code{in.var} values that went into the spread calculations. 
     }
     \item{marginals}{\code{signature(object = "backtest")}: Returns a
       list of matrices, one matrix for each \code{in.var}, where the
@@ -143,7 +157,7 @@ elements: \code{means}, \code{counts}, \code{trim.means}, and
 \examples{
 
 data(starmine)
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.period = FALSE)
+bt <- backtest(starmine, in.var = "smi", ret.var = "ret.0.1.m", by.period = FALSE)
 
 ## Summary for a pooled backtest
 
@@ -151,7 +165,7 @@ summary(bt)
 
 ## A natural backtest
 
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m",
+bt <- backtest(starmine, in.var = "smi", ret.var = "ret.0.1.m",
                date.var = "date", id.var = "id", natural = TRUE, by.period = FALSE)
 
 ## Summary for a natural backtest

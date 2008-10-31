@@ -29,7 +29,7 @@ overlaps.compute <- function(x, in.factor, date.var, id.var, overlaps){
   
   weight.matrix <- data.frame(x[[date.var]], x[[id.var]], x$weight)
   names(weight.matrix) <- c("date", "id", "weight")
-  x <- x[,-ncol(x)]
+  x <- x[!names(x) %in% "weight"]
 
   ## Calculating final weights over multiple dates
   
@@ -52,15 +52,15 @@ tribucket <- function(x, in.factor, date.var, scale = FALSE){
                          if(!isTRUE(scale)){
                            
                            tmp[tmp == "high"] <- 1/length(tmp[tmp == "high"])
-                           tmp[tmp == "mid"] <- 0
-                           tmp[tmp == "low"] <- -1/length(tmp[tmp == "low"])
+                           tmp[tmp == "mid"]  <- 0
+                           tmp[tmp == "low"]  <- -1/length(tmp[tmp == "low"])
                          }
 
                          else{
                            tmp <- as.numeric(tmp)
-                           tmp[tmp > 0] <- tmp[tmp > 0]/sum(tmp[tmp > 0])
+                           tmp[tmp > 0]  <- tmp[tmp > 0]/sum(tmp[tmp > 0])
                            tmp[tmp == 0] <- 1/length(tmp[tmp == 0])
-                           tmp[tmp < 0] <- tmp[tmp < 0]/sum(tmp[tmp < 0])
+                           tmp[tmp < 0]  <- tmp[tmp < 0]/sum(tmp[tmp < 0])
                          }
                          
                          y[[in.factor]] <- tmp

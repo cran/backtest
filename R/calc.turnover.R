@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: calc.turnover.R 439 2007-06-28 14:56:34Z narayan $
+## $Id: calc.turnover.R 1300 2008-08-27 21:01:11Z zhao $
 ##
 ## Calculates the turnover for a long-short portfolio
 ## corresponding to a backtest.

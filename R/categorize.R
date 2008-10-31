@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: categorize.R 439 2007-06-28 14:56:34Z narayan $
+## $Id: categorize.R 1300 2008-08-27 21:01:11Z zhao $
 ##
 ## Returns a factor corresponding to vector "x"
 ##

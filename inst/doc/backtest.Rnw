@@ -122,9 +122,7 @@ current.options <- options(digits = 1, width = 80, scipen = 99)
 @
 
 <<echo=false>>=
-cat.df.without.rownames(starmine[row.names(starmine) %in% c(23134, 23135, 23136, 17849, 23143, 23144, 51835),
-                                 c("date", "name", "fwd.ret.1m", "fwd.ret.6m","smi")]
-)
+cat.df.without.rownames(starmine[row.names(starmine) %in% c(2254, 9852, 10604, 18953, 62339, 77387, 85739), c("date", "name", "ret.0.1.m", "ret.0.6.m","smi")])
 @ 
 
 <<echo=false>>=
@@ -135,7 +133,7 @@ Most securities (like LoJack above) have multiple entries in the data
 frame, each for a different date.  The row for Supercuts indicates
 that, as of the close of business on August 31, 1995, its \texttt{smi}
 was 57.  During the month of September, its return (i.e.,
-\texttt{fwd.ret.1m}) was -11\%.
+\texttt{ret.0.1.m}) was -11\%.
 
 \section*{A simple backtest}
 
@@ -143,7 +141,7 @@ Backtests are run by calling the function \texttt{backtest} to
 produce an object of class \texttt{backtest}.
 
 <<echo = TRUE>>=
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.period = FALSE)
+bt <- backtest(starmine, in.var = "smi", ret.var = "ret.0.1.m", by.period = FALSE)
 @
 
 \texttt{starmine} is a data frame containing all the information
@@ -216,14 +214,14 @@ positions that have entered the top and bottom quantiles.  If the data
 contains monthly observations, we will form 12 portfolios per year.
 
 To create a simple natural backtest, we again call \texttt{backtest}
-using \texttt{fwd.ret.1m}. This is the only return value in
+using \texttt{ret.0.1.m}. This is the only return value in
 \texttt{starmine} for which we can construct a natural backtest of
 \texttt{smi}.
 
 <<natural portfolio>>=
 bt <- backtest(starmine, id.var = "id",
                date.var = "date", in.var = "smi",
-               ret.var = "fwd.ret.1m", natural = TRUE, by.period = FALSE)
+               ret.var = "ret.0.1.m", natural = TRUE, by.period = FALSE)
 @
 
 Natural backtests require a \texttt{date.var} and \texttt{id.var}, the
@@ -310,7 +308,7 @@ bt <- backtest(starmine,
                      id.var = "id",
                      date.var = "date",
                      in.var = c("smi", "cap.usd"),
-                     ret.var = "fwd.ret.1m",
+                     ret.var = "ret.0.1.m",
                      natural = TRUE,
                      by.period = FALSE)
 @ 
@@ -409,7 +407,7 @@ options(digits = 1, width = 50)
 @
 
 <<sector backtest>>=
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.var = "sector", by.period = FALSE)
+bt <- backtest(starmine, in.var = "smi", ret.var = "ret.0.1.m", by.var = "sector", by.period = FALSE)
 @ 
 
 <<echo=FALSE>>=
@@ -457,7 +455,7 @@ options(digits = 1, width = 30)
 @
 
 <<market cap, echo=TRUE>>=
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.var = "cap.usd", buckets = c(5, 10), by.period = FALSE)
+bt <- backtest(starmine, in.var = "smi", ret.var = "ret.0.1.m", by.var = "cap.usd", buckets = c(5, 10), by.period = FALSE)
 @ 
 
 <<echo=false>>=
@@ -487,7 +485,7 @@ considers one month and six month forward returns together:
 
 <<echo = TRUE>>=
 bt <- backtest(starmine, in.var = "smi", buckets = 4,
-               ret.var = c("fwd.ret.1m", "fwd.ret.6m"), by.period = FALSE)
+               ret.var = c("ret.0.1.m", "ret.0.6.m"), by.period = FALSE)
 @ 
 
 <<echo=false>>=
@@ -504,7 +502,7 @@ summary(bt)
 
 The performance of \texttt{smi} over these two return horizons tells
 us that the power of the signal degrades after the first month.  Using
-six month forward return, \texttt{fwd.ret.6m}, the spread is 6\%.
+six month forward return, \texttt{ret.0.6.m}, the spread is 6\%.
 This is only 3 times larger than the 2\% spread return in the first
 month despite covering a period which is 6 times longer. In other
 words, the model produces 2\% spread returns in the first month but

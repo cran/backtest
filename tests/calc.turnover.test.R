@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: calc.turnover.test.R 342 2006-10-01 05:02:50Z enos $
+## $Id: calc.turnover.test.R 1300 2008-08-27 21:01:11Z zhao $
 ##
 ## Tests for function "calc.turnover"
 ##

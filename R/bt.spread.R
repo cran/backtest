@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: bt.spread.R 342 2006-10-01 05:02:50Z enos $
+## $Id: bt.spread.R 1300 2008-08-27 21:01:11Z zhao $
 ##
 ## Calculates the spreads and confidence intervals for a given data frame
 ##

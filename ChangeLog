@@ -1,3 +1,14 @@
+Version: 0.3-0 (2008-09-12, released)
+
+	* Added totalCounts method. Counts non-NA values that went into 
+          the calculation of spreads
+
+	* Method summaryStats made public.
+
+	* Fixed overlaps order of operations bug in backtest.function.
+
+	* Added returns and financials columns to starmine data.
+
 Version: 0.2-0 (2007-07-02, released)
 
 	* Added overlaps feature for controlling turnover.

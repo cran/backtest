@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: categorize.test.R 342 2006-10-01 05:02:50Z enos $
+## $Id: categorize.test.R 1300 2008-08-27 21:01:11Z zhao $
 ##
 ## Tests for function "categorize"
 ##

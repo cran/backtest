@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.function.R 481 2007-07-03 20:10:28Z enos $
+## $Id: backtest.function.R 1300 2008-08-27 21:01:11Z zhao $
 ##
 ## Returns an object of class backtest
 ##
@@ -102,20 +102,20 @@ backtest <- function(x,
 
   ## If overlaps is greater than 0, in.var must be of length one and numeric.
 
-  if(overlaps > 1 && length(in.var) == 1 && !is.numeric(x[in.var])){
+  if(overlaps > 1 && (length(in.var) != 1 || !is.numeric(x[[in.var]]))){
     stop("If overlaps is greater than 1, in.var must be of length one and numeric.")
   }
 
   ## Overlap option must include id.var
   
-  if(overlaps > 1 && length(id.var) <= 1){
+  if(overlaps > 1 && length(id.var) < 1){
     stop("If overlaps is greater than 1, there must be an id.var.")
   }
 
 
   ## Overlaps must be less than the number of periods
 
-  if(overlaps != 1 && overlaps > length(unique(x[date.var]))){
+  if(overlaps != 1 && overlaps > length(unique(x[[date.var]]))){
     stop("Overlaps must be less than the number of periods.")
   }
 
@@ -253,13 +253,15 @@ backtest <- function(x,
       ## Recalculate weights based on overlaps
 
       if(overlaps > 1){
-        levels(in.factor[[i]])[1]                <- "low"
-        levels(in.factor[[i]])[buckets[1]]       <- "high"
-        levels(in.factor[[i]])[2:buckets[1] - 1] <- "mid"
-        
-        x <- overlaps.compute(x, in.factor[[i]], date.var, id.var, overlaps)
+        levels(in.factor[[i]])[1]                  <- "low"
+        levels(in.factor[[i]])[buckets[1]]         <- "high"
+        levels(in.factor[[i]])[2:(buckets[1] - 1)] <- "mid"
 
+        in.factor.col <- paste("in.factor.", i, sep = "")
         
+        x[[in.factor.col]] <- in.factor[[i]]
+        
+        x <- overlaps.compute(x, in.factor.col, date.var, id.var, overlaps)
       }
     }
 

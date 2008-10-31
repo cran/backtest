@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.R 481 2007-07-03 20:10:28Z enos $
+## $Id: backtest.R 1301 2008-08-28 15:31:15Z zhao $
 ##
 ## Result object for a backtest
 ##
@@ -154,12 +154,13 @@ setMethod("summary",
           )
 
 
-## Returns a matrix summarizing the results of the backtest.  The
-## cells of the matrix contain means in cases 1, 2, and 4, and
+## Returns a data frame summarizing the results of the backtest.  The
+## entries of the data frame contain means in cases 1, 2, and 4, and
 ## spreads in cases 3 and 5.  When a table of means is returned, the
-## ".bt.spread" function is called and summary spread data is attached to
-## the right side of the matrix.  If a date.var is used, ".bt.mean"
-## is called and mean summary data are attached to bottom of the matrix.
+## ".bt.spread" function is called and summary spread data is attached
+## to the right side of the data frame.  If a date.var is used,
+## ".bt.mean" is called and mean summary data are attached to bottom
+## of the data frame.
 
 setMethod("summaryStats",
           signature(object = "backtest"),
@@ -308,6 +309,27 @@ setMethod("counts",
             names(count.list) <- object@in.var
 
             count.list
+          }
+          )
+
+## This function computes the counts of non-NA values that went into
+## the calculation of spreads displayed by backtests's summary()
+## function. It is different from counts because it displays the sum
+## of counts from all buckets (or lowest and highest only), thus
+## allowing for output that matches the format of spreads output.
+
+setMethod("totalCounts",
+          signature(object = "backtest"),
+          function(object, low.high.only = FALSE){
+
+            counts <- data.frame(do.call("cbind",
+                        lapply(counts(object), function(x){
+                          if(isTRUE(low.high.only))
+                            x <- x[c("low", "high")]
+                          rowSums(x)
+                        })))
+            
+            counts
           }
           )
 

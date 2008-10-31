@@ -98,7 +98,7 @@ accepts the value passed by the user as valid.
   
   The functions \code{show} and \code{summary} are used to obtain and
   print a short description and longer summary of the results of the
-  \code{backtest}.  The accessor functions \code{counts},
+  \code{backtest}.  The accessor functions \code{counts}, \code{totalCounts},
   \code{marginals}, \code{mean}, \code{naCounts}, and \code{turnover}
   extract different parts of the value returned by \code{backtest}.
 }
@@ -113,13 +113,13 @@ data(starmine)
 
 ## Backtest with 1 'in.var' and 1 'ret.var'
 
-bt <- backtest(starmine, in.var = "smi", ret.var = "fwd.ret.1m", by.period = FALSE)
+bt <- backtest(starmine, in.var = "smi", ret.var = "ret.0.1.m", by.period = FALSE)
 summary(bt)
 
 ## Backtest with 2 'in.var' values, 1 'ret.var', and a 'by.var'
 
 bt <- backtest(starmine, in.var = c("smi", "cap.usd"),
-               ret.var = "fwd.ret.1m", by.var = "sector", by.period = FALSE)
+               ret.var = "ret.0.1.m", by.var = "sector", by.period = FALSE)
 summary(bt)
 
 ## Backtest with 1 'in.var', 1 'by.var', and 1 'ret.var'.  Number of
@@ -129,14 +129,14 @@ summary(bt)
 ## unique category.
 
 bt <- backtest(starmine, in.var = "smi", by.var = "sector",
-               ret.var = "fwd.ret.1m", buckets = 4, by.period = FALSE)
+               ret.var = "ret.0.1.m", buckets = 4, by.period = FALSE)
 summary(bt)
 
 ## Backtest with 1 'in.var', multiple 'ret.var', and a
 ## universe restriction
 
 bt <- backtest(starmine, in.var = "smi",
-               ret.var = c("fwd.ret.1m", "fwd.ret.6m"),
+               ret.var = c("ret.0.1.m", "ret.0.6.m"),
                universe = sector == "HiTec", by.period = FALSE)
 summary(bt)
 
@@ -144,7 +144,7 @@ summary(bt)
 ## 10 buckets
 
 bt <- backtest(starmine, in.var = c("smi","cap.usd"),
-               ret.var = "fwd.ret.1m", date.var = "date",
+               ret.var = "ret.0.1.m", date.var = "date",
                id.var = "id", buckets = 10,
                natural = TRUE, by.period = FALSE)
 summary(bt)
@@ -152,7 +152,7 @@ summary(bt)
 ## The same backtest, but calculating quantiles within periods.
 
 bt <- backtest(starmine, in.var = c("smi","cap.usd"),
-               ret.var = "fwd.ret.1m", date.var = "date",
+               ret.var = "ret.0.1.m", date.var = "date",
                id.var = "id", buckets = 10,
                natural = TRUE, by.period = TRUE)
 summary(bt)
