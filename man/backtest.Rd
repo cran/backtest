@@ -49,21 +49,24 @@ backtest(x,
     plotted.  The details of how a natural backtest differs from a pooled
     backtest are given below.
   }
-  \item{do.spread}{An optional logical value. If TRUE the \code{summary}
+  \item{do.spread}{Object of class \code{"logical"}. If TRUE the \code{summary}
     method displays information about the spread between the extreme
     quantiles.  If FALSE this information is suppressed.  Defaults to TRUE.
-    }
-  \item{by.period}{An optional logical value. If TRUE the quantiles are
+  }
+  \item{by.period}{Object of class \code{"logical"}. If TRUE the quantiles are
     recalculated within each date period.  If FALSE the quantiles are
     calculated all at once.  Defaults to TRUE.
   }
-  \item{overlaps}{An optional integer which specifies how many periods
-    to combine portfolios of in order to weight a current period.  If
-    \code{overlaps} is the default of 1, backtest behaves as normal and only uses a
-    periods own data to determine the portfolio.  If \code{overlaps} is set to
-    n > 1, a period's portfolio is calculated by giving 1/n weight to
-    the previous n periods.
-    }
+  \item{overlaps}{An object of class \code{"numeric"} which specifies
+    the number of prior periods to include in the current period's
+    portfolio weights calculation. If \code{overlaps} is the default of 1,
+    backtest behaves as usual and only uses a periods own data to
+    determine its portfolio.  If \code{overlaps} is set to
+    n > 1, a period's portfolio comprises the weighted mean of
+    portfolio weights from the previous n periods, with period n
+    having a weight of 1/n.
+  }
+
 }
 
 \details{
@@ -99,7 +102,7 @@ accepts the value passed by the user as valid.
   The functions \code{show} and \code{summary} are used to obtain and
   print a short description and longer summary of the results of the
   \code{backtest}.  The accessor functions \code{counts}, \code{totalCounts},
-  \code{marginals}, \code{mean}, \code{naCounts}, and \code{turnover}
+  \code{marginals}, \code{means}, \code{naCounts}, and \code{turnover}
   extract different parts of the value returned by \code{backtest}.
 }
 

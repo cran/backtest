@@ -50,17 +50,37 @@
       the number(s) of buckets used create quantiles from the
       \code{in.var} and \code{by.var} values.
     }
-    \item{\code{results}:}{A 5-dimensional array containing the results
-      of the backtest.
+    \item{\code{results}:}{A 5-dimensional \code{"array"} containing the
+      results of the backtest.
     }
-    \item{\code{rawstats}:}{Object of class \code{"data.frame"} containing
-      some summary statistics for this backtest. 
+    \item{\code{ret.stats}:}{Object of class \code{"array"} containing
+      return statistics for the backtest.  
+    }
+    \item{\code{turnover}:}{Object of class \code{"array"} containing
+      turnover statistics for the backtest.
     }
     \item{\code{natural}:}{Object of class \code{"logical"} expressing
       whether or not the intervals between observations, as specified by
       \code{date.var}, and returns, as specified by \code{ret.var},
       match.  If the interval between dates is one month, the interval
       between returns should also be one month.
+    }
+    \item{\code{do.spread}:}{Object of class \code{"logical"}. If TRUE the \code{summary}
+      method displays information about the spread between the extreme
+      quantiles.  If FALSE this information is suppressed.  Defaults to TRUE.
+    }
+    \item{\code{by.period}:}{Object of class \code{"logical"}. If TRUE the quantiles are
+      recalculated within each date period.  If FALSE the quantiles are
+      calculated all at once.  Defaults to TRUE.
+    }
+    \item{\code{overlaps}:}{An object of class \code{"numeric"} which specifies
+      the number of prior periods to include in the current period's
+      portfolio weights calculation. If \code{overlaps} is the default of 1,
+      backtest behaves as usual and only uses a periods own data to
+      determine its portfolio.  If \code{overlaps} is set to
+      n > 1, a period's portfolio comprises the weighted mean of
+      portfolio weights from the previous n periods, with period n
+      having a weight of 1/n.
     }
   }
 }

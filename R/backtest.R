@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## $Id: backtest.R 1301 2008-08-28 15:31:15Z zhao $
+## $Id: backtest.R 1622 2010-02-18 17:50:34Z enos $
 ##
 ## Result object for a backtest
 ##
@@ -20,7 +20,6 @@ setClass("backtest", representation(in.var        = "character",
                                     date.var      = "character",
                                     buckets       = "numeric",
                                     results       = "array",
-                                    summary.stats = "data.frame",
                                     ret.stats     = "array",
                                     turnover      = "array",
                                     natural       = "logical",
@@ -34,7 +33,6 @@ setClass("backtest", representation(in.var        = "character",
                    date.var      = character(),
                    buckets       = numeric(),
                    results       = array(dim = c(1,1,1,1,1)),
-                   summary.stats = data.frame(),
                    ret.stats     = array(dim = c(1,6)),
                    turnover      = array(),
                    natural       = FALSE,

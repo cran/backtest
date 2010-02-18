@@ -14,8 +14,8 @@ portfolio-based conjectures about financial instruments
 \tabular{ll}{
 Package: \tab backtest\cr
 Type: \tab Package\cr
-Version: \tab 0.3-0\cr
-Date: \tab 2008-10-31\cr
+Version: \tab 0.3-1\cr
+Date: \tab 2010-02-18\cr
 Depends: \tab R (>= 2.3.0), methods, grid, lattice\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
